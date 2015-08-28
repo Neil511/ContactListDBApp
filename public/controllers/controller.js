@@ -1,31 +1,43 @@
 var myApp = angular.module('myApp',[]);
 
-myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $htpp){
+myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http){
 	console.log("Hello world from controller!")
 
-	person1 = {
-		name: "Neil Lohana",
-		email: "blah@example.com",
-		number: "(000) 000-0000",
-		address: "123 This Lane, USA"
-	};
+var refresh = function () {
+	$http.get('/contactlist').success(function (response) {
+		console.log("I got the requested data!");
+		$scope.contactlist = response;
+		$scope.contact = "";
+	});
+};
+refresh();
 
-	person2 = {
-		name: "Sagar Lohana",
-		email: "blah@example.com",
-		number: "(111) 111-1111",
-		address: "123 Where Way, USA"
-	};
+$scope.addContact = function() {
+	console.log($scope.contact);
+	$http.post('/contactlist', $scope.contact).success(function(response) {
+		console.log(response);
+		refresh();
+	});
+};
 
-	person3= {
-		name: "Rahul Lohana",
-		email: "blah@example.com",
-		number: "(222) 222-2222",
-		address: "456 This Way, USA"
-	};
+$scope.removeContact = function(id) {
+	console.log(id);
+	$http.delete('/contactlist/' + id).success(function(response) {
+		refresh();
+	});
+};
 
-	var contactlist = [person1, person2, person3];
+$scope.editContact = function(id) {
+	console.log(id);
+	$http.get('/contactlist/' + id).success(function (response) {
+		$scope.contact = response;
+	});
+};
 
-	$scope.contactlist = contactlist;
+$scope.updateContact = function () {
+	console.log($scope.contact._id);
+	$http.put('/contactlist/' + $scope.contact._id, $scope.contact);
+};
+
 }]);
 
